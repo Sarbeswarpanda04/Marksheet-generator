@@ -60,6 +60,79 @@ const translations = {
     }
 };
 
+// Add these new DOM elements at the top with other DOM elements
+const loadingOverlay = document.createElement('div');
+loadingOverlay.className = 'loading-overlay';
+loadingOverlay.innerHTML = '<div class="loading-spinner"></div>';
+document.body.appendChild(loadingOverlay);
+
+// Add new utility functions
+function showLoading() {
+    loadingOverlay.classList.add('active');
+}
+
+function hideLoading() {
+    loadingOverlay.classList.remove('active');
+}
+
+// Add success/error toast notifications
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+        <div class="toast-content ${type}">
+            <i class="fas ${getToastIcon(type)}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    document.body.appendChild(toast);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(0)';
+        toast.style.opacity = '1';
+    });
+
+    // Auto remove
+    setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function getToastIcon(type) {
+    switch(type) {
+        case 'success': return 'fa-check-circle';
+        case 'error': return 'fa-times-circle';
+        case 'warning': return 'fa-exclamation-circle';
+        default: return 'fa-info-circle';
+    }
+}
+
+// Add keyboard navigation
+function handleTabNavigation(e) {
+    if (e.key === 'Tab') {
+        const focusableElements = loginForm.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+                lastElement.focus();
+                e.preventDefault();
+            }
+        } else {
+            if (document.activeElement === lastElement) {
+                firstElement.focus();
+                e.preventDefault();
+            }
+        }
+    }
+}
+
 // Initialize
 function initialize() {
     initializeTheme();
@@ -122,26 +195,34 @@ function initializeParticles() {
 }
 
 // Social Login
-function handleSocialLogin(provider) {
-    // Add loading state
+async function handleSocialLogin(provider) {
     const button = event.currentTarget;
     const icon = button.querySelector('i');
     const originalClass = icon.className;
-    icon.className = 'fas fa-spinner fa-spin';
-    button.disabled = true;
 
-    // Simulate API call
-    setTimeout(() => {
-        // Reset button state
+    try {
+        showLoading();
+        icon.className = 'fas fa-spinner fa-spin';
+        button.disabled = true;
+
+        // Simulate OAuth API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        showToast(`Successfully logged in with ${provider}`, 'success');
+        setTimeout(() => {
+            window.location.href = 'pages/student/student-dashboard.html';
+        }, 1000);
+    } catch (error) {
+        showToast(`Failed to login with ${provider}`, 'error');
         icon.className = originalClass;
         button.disabled = false;
-        // Here you would typically handle OAuth login
-        console.log(`Logging in with ${provider}`);
-    }, 1500);
+    } finally {
+        hideLoading();
+    }
 }
 
 // Form Submission with Remember Me
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
     
     const isAdmin = document.querySelector('.toggle-btn[data-type="admin"]').classList.contains('active');
@@ -149,25 +230,30 @@ function handleLogin(e) {
     const password = userPassword.value;
 
     if (validateLogin(identifier, password, isAdmin)) {
-        // Handle Remember Me
-        if (rememberMeCheckbox.checked) {
-            localStorage.setItem(REMEMBER_ME_KEY, JSON.stringify({
-                identifier,
-                type: isAdmin ? 'admin' : 'student'
-            }));
-        } else {
-            localStorage.removeItem(REMEMBER_ME_KEY);
-        }
+        showLoading();
 
-        // Add loading state
-        const submitBtn = e.target.querySelector('button');
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-        submitBtn.disabled = true;
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // Simulate API call
-        setTimeout(() => {
+            // Handle Remember Me
+            if (rememberMeCheckbox.checked) {
+                localStorage.setItem(REMEMBER_ME_KEY, JSON.stringify({
+                    identifier,
+                    type: isAdmin ? 'admin' : 'student'
+                }));
+                showToast('Login preferences saved', 'success');
+            } else {
+                localStorage.removeItem(REMEMBER_ME_KEY);
+            }
+
+            // Redirect
             window.location.href = isAdmin ? 'pages/admin/admin-dashboard.html' : 'pages/student/student-dashboard.html';
-        }, 1500);
+        } catch (error) {
+            showToast('Login failed. Please try again.', 'error');
+        } finally {
+            hideLoading();
+        }
     }
 }
 
@@ -193,56 +279,42 @@ function updateLoginType(type) {
 
 // Form Validation
 function validateLogin(identifier, password, isAdmin) {
-    if (!identifier || identifier.trim() === '') {
-        showError(isAdmin ? 'Please enter your username' : 'Please enter your roll number');
-        return false;
-    }
+    const validations = [
+        {
+            condition: !identifier || identifier.trim() === '',
+            message: isAdmin ? 'Please enter your username' : 'Please enter your roll number',
+            type: 'error'
+        },
+        {
+            condition: !password,
+            message: 'Please enter your password',
+            type: 'error'
+        },
+        {
+            condition: password && password.length < (isAdmin ? 8 : 6),
+            message: `Password must be at least ${isAdmin ? 8 : 6} characters long`,
+            type: 'error'
+        },
+        {
+            condition: isAdmin && !/[A-Z]/.test(password),
+            message: 'Admin password must contain at least one uppercase letter',
+            type: 'error'
+        },
+        {
+            condition: isAdmin && !/[0-9]/.test(password),
+            message: 'Admin password must contain at least one number',
+            type: 'error'
+        }
+    ];
+
+    const failures = validations.filter(v => v.condition);
     
-    const minLength = isAdmin ? 8 : 6;
-    if (!password || password.length < minLength) {
-        showError(`Password must be at least ${minLength} characters long`);
+    if (failures.length > 0) {
+        failures.forEach(failure => showToast(failure.message, failure.type));
         return false;
     }
     
     return true;
-}
-
-// Error Handling with Animation
-function showError(message) {
-    // Remove existing error messages
-    document.querySelectorAll('.error-message').forEach(error => error.remove());
-    
-    // Create error element
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.textContent = message;
-    errorDiv.style.cssText = `
-        color: #ff3860;
-        background-color: #feecf0;
-        padding: 10px;
-        border-radius: 10px;
-        margin: 10px 0;
-        text-align: center;
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-    `;
-
-    // Insert error message
-    loginForm.insertBefore(errorDiv, loginForm.firstChild);
-    
-    // Trigger animation
-    requestAnimationFrame(() => {
-        errorDiv.style.opacity = '1';
-        errorDiv.style.transform = 'translateY(0)';
-    });
-
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        errorDiv.style.opacity = '0';
-        errorDiv.style.transform = 'translateY(-10px)';
-        setTimeout(() => errorDiv.remove(), 300);
-    }, 3000);
 }
 
 // Toggle theme
@@ -317,4 +389,31 @@ document.addEventListener('keypress', (e) => {
         const nextType = currentActive.dataset.type === 'student' ? 'admin' : 'student';
         document.querySelector(`.toggle-btn[data-type="${nextType}"]`).click();
     }
-}); 
+});
+
+// Add these event listeners at the bottom with other event listeners
+document.addEventListener('keydown', handleTabNavigation);
+
+// Add touch gesture support
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipeGesture();
+});
+
+function handleSwipeGesture() {
+    const SWIPE_THRESHOLD = 50;
+    const swipeDistance = touchEndX - touchStartX;
+    
+    if (Math.abs(swipeDistance) > SWIPE_THRESHOLD) {
+        const currentActive = document.querySelector('.toggle-btn.active');
+        const nextType = currentActive.dataset.type === 'student' ? 'admin' : 'student';
+        document.querySelector(`.toggle-btn[data-type="${nextType}"]`).click();
+    }
+} 
