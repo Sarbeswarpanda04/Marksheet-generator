@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Student Marksheet Management System</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/settings.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="settings-page">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo-wrapper">
+            <img src="../../assets/logo.png" alt="Logo" class="logo">
+            <span class="logo-text">SMMS</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="student-dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <a href="marksheets.html" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Marksheets</span>
+            </a>
+            <a href="performance.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Performance</span>
+            </a>
+            <a href="settings.html" class="nav-item active">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <button class="nav-item logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </div>
+            <div class="language-selector">
+                <select id="language">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="bn">বাংলা</option>
+                </select>
+            </div>
+            <div class="user-info">
+                <img src="../../assets/avatar.png" alt="User Avatar" class="avatar">
+                <span class="user-name">John Doe</span>
+            </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="settings-container">
+            <h1>Settings</h1>
+            
+            <!-- Appearance Section -->
+            <section class="settings-section">
+                <h2>Appearance</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Dark Mode</span>
+                            <p class="setting-description">Enable dark mode for better viewing in low light</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="dark-mode-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>High Contrast</span>
+                            <p class="setting-description">Increase contrast for better readability</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="contrast-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Animations</span>
+                            <p class="setting-description">Enable or disable interface animations</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="animations-toggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications Section -->
+            <section class="settings-section">
+                <h2>Notifications</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Email Notifications</span>
+                            <p class="setting-description">Receive updates via email</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="email-notif-toggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Browser Notifications</span>
+                            <p class="setting-description">Show desktop notifications</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="browser-notif-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Result Updates</span>
+                            <p class="setting-description">Get notified when new results are published</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="result-notif-toggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Privacy Section -->
+            <section class="settings-section">
+                <h2>Privacy</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Profile Visibility</span>
+                            <p class="setting-description">Make your profile visible to other students</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="profile-visibility-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Activity Status</span>
+                            <p class="setting-description">Show when you're online</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="activity-status-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Performance Stats</span>
+                            <p class="setting-description">Share your performance statistics</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="performance-stats-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Section -->
+            <section class="settings-section">
+                <h2>Security</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Two-Factor Authentication</span>
+                            <p class="setting-description">Add an extra layer of security</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="2fa-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Login History</span>
+                            <button class="btn-secondary view-history">View History</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Change Password</span>
+                            <button class="btn-secondary change-password">Update Password</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data & Storage Section -->
+            <section class="settings-section">
+                <h2>Data & Storage</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Download Data</span>
+                            <p class="setting-description">Download your personal data</p>
+                        </div>
+                        <button class="btn-secondary download-data">Download</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Clear Cache</span>
+                            <p class="setting-description">Clear locally stored data</p>
+                        </div>
+                        <button class="btn-secondary clear-cache">Clear</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <span>Delete Account</span>
+                            <p class="setting-description">Permanently delete your account</p>
+                        </div>
+                        <button class="btn-danger delete-account">Delete</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Action</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to proceed with this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary cancel-action">Cancel</button>
+                <button class="btn-primary confirm-action">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="../../js/settings.js"></script>
+</body>
+</html> 

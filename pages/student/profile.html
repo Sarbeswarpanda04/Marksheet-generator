@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile - Marksheet Management System</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Gradient Background -->
+    <div class="gradient-bg">
+        <div class="gradient-1"></div>
+        <div class="gradient-2"></div>
+        <div class="gradient-3"></div>
+    </div>
+    
+    <!-- Glass Overlay -->
+    <div class="glass-overlay"></div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" aria-label="Toggle theme">
+        <i id="theme-toggle-icon" class="fas fa-moon"></i>
+    </button>
+
+    <!-- Language Selector -->
+    <div class="language-toggle">
+        <select id="languageSelect" aria-label="Select language">
+            <option value="en">English</option>
+            <option value="hi">हिंदी</option>
+            <option value="bn">বাংলা</option>
+        </select>
+    </div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar (reuse from dashboard) -->
+        <aside class="sidebar">
+            <!-- ... sidebar content ... -->
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="breadcrumb">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </div>
+                <div class="user-info">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../../assets/images/default-avatar.png" alt="Student" class="avatar">
+                        <span class="user-name">John Doe</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Profile Content -->
+            <div class="profile-content">
+                <!-- Profile Header -->
+                <section class="profile-header">
+                    <div class="profile-cover">
+                        <button class="edit-cover">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            <img src="../../assets/images/default-avatar.png" alt="Profile Picture">
+                            <button class="edit-avatar">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <div class="profile-details">
+                            <h1>John Doe</h1>
+                            <p>Computer Science & Engineering</p>
+                            <p>Roll No: CSE/2024/001</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Profile Sections -->
+                <div class="profile-sections">
+                    <!-- Personal Information -->
+                    <section class="profile-card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-user"></i> Personal Information</h2>
+                            <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Full Name</label>
+                                    <p>John Doe</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Date of Birth</label>
+                                    <p>15 March 2000</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Gender</label>
+                                    <p>Male</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Blood Group</label>
+                                    <p>O+</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email</label>
+                                    <p>john.doe@example.com</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Phone</label>
+                                    <p>+91 98765 43210</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Academic Information -->
+                    <section class="profile-card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-graduation-cap"></i> Academic Information</h2>
+                            <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Department</label>
+                                    <p>Computer Science & Engineering</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Batch</label>
+                                    <p>2020-2024</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Current Semester</label>
+                                    <p>6th Semester</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Current CGPA</label>
+                                    <p>8.75</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Admission Date</label>
+                                    <p>1 August 2020</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Expected Graduation</label>
+                                    <p>May 2024</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Contact Information -->
+                    <section class="profile-card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-address-card"></i> Contact Information</h2>
+                            <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-grid">
+                                <div class="info-item full-width">
+                                    <label>Current Address</label>
+                                    <p>123 College Road, Student Housing Block A</p>
+                                </div>
+                                <div class="info-item full-width">
+                                    <label>Permanent Address</label>
+                                    <p>456 Main Street, Apartment 7B, New Delhi, 110001</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Emergency Contact</label>
+                                    <p>Robert Doe (Father)</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Emergency Phone</label>
+                                    <p>+91 98765 43211</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Account Settings -->
+                    <section class="profile-card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-cog"></i> Account Settings</h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="settings-grid">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h3>Two-Factor Authentication</h3>
+                                        <p>Add an extra layer of security to your account</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="2fa-toggle">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h3>Email Notifications</h3>
+                                        <p>Receive updates about your academic progress</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="email-notif-toggle" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h3>SMS Notifications</h3>
+                                        <p>Get important alerts via SMS</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="sms-notif-toggle">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <button class="btn-change-password">
+                                    <i class="fas fa-lock"></i> Change Password
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <!-- Form fields will be dynamically populated -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel">Cancel</button>
+                <button class="btn-save">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/profile.js"></script>
+</body>
+</html> 
