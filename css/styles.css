@@ -1,0 +1,238 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #2c3e50;
+    --background-color: #f5f6fa;
+    --text-color: #2c3e50;
+    --card-background: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 1000;
+    background: var(--card-background);
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: var(--transition-speed);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Header Styles */
+.header {
+    margin-bottom: 50px;
+    padding: 20px 0;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.college-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.college-info h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.college-info p {
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.login-options {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Login Cards */
+.login-card {
+    background: var(--card-background);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    width: 350px;
+    transition: transform var(--transition-speed);
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-card h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+
+.login-card p {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #666;
+}
+
+/* Form Styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--transition-speed);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* Button Styles */
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-speed);
+    width: 100%;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+/* Footer Styles */
+.footer {
+    margin-top: auto;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-links a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: var(--transition-speed);
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .college-info h1 {
+        font-size: 2rem;
+    }
+
+    .login-options {
+        gap: 20px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .logo-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+} 
