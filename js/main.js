@@ -1,8 +1,12 @@
 // DOM Elements
 const themeToggle = document.querySelector('.theme-toggle');
 const themeToggleIcon = document.getElementById('theme-toggle-icon');
-const studentLoginForm = document.getElementById('studentLoginForm');
-const adminLoginForm = document.getElementById('adminLoginForm');
+const loginForm = document.getElementById('loginForm');
+const toggleBtns = document.querySelectorAll('.toggle-btn');
+const formHeader = document.querySelector('.form-header');
+const userIdentifier = document.getElementById('userIdentifier');
+const userPassword = document.getElementById('userPassword');
+const passwordToggle = document.querySelector('.password-toggle');
 
 // Theme Management
 const DARK_MODE_KEY = 'darkMode';
@@ -36,33 +40,47 @@ function toggleTheme() {
     }, 200);
 }
 
+// Login Type Toggle
+function updateLoginType(type) {
+    const isAdmin = type === 'admin';
+    
+    // Update form header
+    formHeader.querySelector('.card-icon i').className = isAdmin ? 'fas fa-user-shield' : 'fas fa-user-graduate';
+    formHeader.querySelector('h2').textContent = isAdmin ? 'Admin Login' : 'Student Login';
+    formHeader.querySelector('p').textContent = isAdmin ? 'Manage student records and generate reports' : 'Access your marksheet and academic performance';
+    
+    // Update input placeholders
+    userIdentifier.placeholder = isAdmin ? 'Username' : 'Roll Number';
+    
+    // Update validation requirements
+    userPassword.setAttribute('minlength', isAdmin ? '8' : '6');
+    
+    // Add animation
+    formHeader.style.animation = 'fadeIn 0.3s ease-out';
+    setTimeout(() => formHeader.style.animation = '', 300);
+}
+
 // Form Validation
-function validateStudentLogin(rollNumber, password) {
-    if (!rollNumber || rollNumber.trim() === '') {
-        showError('Please enter your roll number');
+function validateLogin(identifier, password, isAdmin) {
+    if (!identifier || identifier.trim() === '') {
+        showError(isAdmin ? 'Please enter your username' : 'Please enter your roll number');
         return false;
     }
-    if (!password || password.length < 6) {
-        showError('Password must be at least 6 characters long');
+    
+    const minLength = isAdmin ? 8 : 6;
+    if (!password || password.length < minLength) {
+        showError(`Password must be at least ${minLength} characters long`);
         return false;
     }
+    
     return true;
 }
 
-function validateAdminLogin(username, password) {
-    if (!username || username.trim() === '') {
-        showError('Please enter your username');
-        return false;
-    }
-    if (!password || password.length < 8) {
-        showError('Admin password must be at least 8 characters long');
-        return false;
-    }
-    return true;
-}
-
-// Error Handling
+// Error Handling with Animation
 function showError(message) {
+    // Remove existing error messages
+    document.querySelectorAll('.error-message').forEach(error => error.remove());
+    
     // Create error element
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message';
@@ -71,78 +89,71 @@ function showError(message) {
         color: #ff3860;
         background-color: #feecf0;
         padding: 10px;
-        border-radius: 4px;
+        border-radius: 10px;
         margin: 10px 0;
         text-align: center;
-        animation: fadeIn 0.3s ease-in-out;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
     `;
 
-    // Remove existing error messages
-    document.querySelectorAll('.error-message').forEach(error => error.remove());
+    // Insert error message
+    loginForm.insertBefore(errorDiv, loginForm.firstChild);
+    
+    // Trigger animation
+    requestAnimationFrame(() => {
+        errorDiv.style.opacity = '1';
+        errorDiv.style.transform = 'translateY(0)';
+    });
 
-    // Show new error message
-    const activeForm = document.activeElement.closest('form');
-    if (activeForm) {
-        activeForm.insertBefore(errorDiv, activeForm.firstChild);
-        
-        // Auto remove after 3 seconds
-        setTimeout(() => {
-            errorDiv.style.animation = 'fadeOut 0.3s ease-in-out';
-            setTimeout(() => errorDiv.remove(), 300);
-        }, 3000);
-    }
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        errorDiv.style.opacity = '0';
+        errorDiv.style.transform = 'translateY(-10px)';
+        setTimeout(() => errorDiv.remove(), 300);
+    }, 3000);
 }
 
-// Form Submissions
-function handleStudentLogin(e) {
+// Form Submission
+function handleLogin(e) {
     e.preventDefault();
-    const rollNumber = document.getElementById('studentRoll').value;
-    const password = document.getElementById('studentPassword').value;
+    
+    const isAdmin = document.querySelector('.toggle-btn[data-type="admin"]').classList.contains('active');
+    const identifier = userIdentifier.value;
+    const password = userPassword.value;
 
-    if (validateStudentLogin(rollNumber, password)) {
-        // Add loading state
+    if (validateLogin(identifier, password, isAdmin)) {
+        // Add loading state with spinner animation
         const submitBtn = e.target.querySelector('button');
-        const originalText = submitBtn.textContent;
+        const btnContent = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
         submitBtn.disabled = true;
 
         // Simulate API call
         setTimeout(() => {
             // Here you would typically make an API call to verify credentials
-            window.location.href = 'pages/student/student-dashboard.html';
+            window.location.href = isAdmin ? 'pages/admin/admin-dashboard.html' : 'pages/student/student-dashboard.html';
         }, 1500);
     }
 }
 
-function handleAdminLogin(e) {
-    e.preventDefault();
-    const username = document.getElementById('adminUsername').value;
-    const password = document.getElementById('adminPassword').value;
-
-    if (validateAdminLogin(username, password)) {
-        // Add loading state
-        const submitBtn = e.target.querySelector('button');
-        const originalText = submitBtn.textContent;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-        submitBtn.disabled = true;
-
-        // Simulate API call
-        setTimeout(() => {
-            // Here you would typically make an API call to verify credentials
-            window.location.href = 'pages/admin/admin-dashboard.html';
-        }, 1500);
-    }
+// Password Visibility Toggle
+function togglePasswordVisibility() {
+    const type = userPassword.type === 'password' ? 'text' : 'password';
+    userPassword.type = type;
+    passwordToggle.classList.toggle('fa-eye');
+    passwordToggle.classList.toggle('fa-eye-slash');
 }
 
-// Add animations for form inputs
+// Input Animations
 function addInputAnimations() {
     const inputs = document.querySelectorAll('input');
     inputs.forEach(input => {
         input.addEventListener('focus', () => {
-            input.parentElement.classList.add('input-focused');
+            input.parentElement.style.transform = 'scale(1.02)';
         });
         input.addEventListener('blur', () => {
-            input.parentElement.classList.remove('input-focused');
+            input.parentElement.style.transform = 'scale(1)';
         });
     });
 }
@@ -154,12 +165,28 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 themeToggle.addEventListener('click', toggleTheme);
-studentLoginForm.addEventListener('submit', handleStudentLogin);
-adminLoginForm.addEventListener('submit', handleAdminLogin);
+loginForm.addEventListener('submit', handleLogin);
+passwordToggle.addEventListener('click', togglePasswordVisibility);
 
-// Add keypress support for theme toggle
+// Toggle Button Event Listeners
+toggleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        toggleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateLoginType(btn.dataset.type);
+    });
+});
+
+// Keyboard Shortcuts
 document.addEventListener('keypress', (e) => {
+    // Theme toggle: Ctrl + T
     if (e.key === 't' && e.ctrlKey) {
         toggleTheme();
+    }
+    // Quick login type toggle: Ctrl + Q
+    if (e.key === 'q' && e.ctrlKey) {
+        const currentActive = document.querySelector('.toggle-btn.active');
+        const nextType = currentActive.dataset.type === 'student' ? 'admin' : 'student';
+        document.querySelector(`.toggle-btn[data-type="${nextType}"]`).click();
     }
 }); 
