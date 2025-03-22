@@ -6,16 +6,25 @@
 }
 
 :root {
-    --primary-color: #4a90e2;
-    --secondary-color: #2c3e50;
-    --background-color: #f5f6fa;
-    --text-color: #2c3e50;
+    /* Modern Color Palette */
+    --primary-color: #6366f1;
+    --secondary-color: #3730a3;
+    --background-color: #f8fafc;
+    --text-color: #1e293b;
     --card-background: rgba(255, 255, 255, 0.9);
     --shadow-color: rgba(0, 0, 0, 0.1);
     --transition-speed: 0.3s;
-    --gradient-1: #4a90e2;
-    --gradient-2: #67b26f;
-    --gradient-3: #4834d4;
+    
+    /* Gradient Colors */
+    --gradient-1: #6366f1;
+    --gradient-2: #3b82f6;
+    --gradient-3: #8b5cf6;
+    --gradient-4: #06b6d4;
+    
+    /* Animation Speeds */
+    --animation-slow: 15s;
+    --animation-medium: 10s;
+    --animation-fast: 5s;
 }
 
 body {
@@ -48,18 +57,21 @@ body {
 }
 
 .gradient-1 {
-    background: var(--gradient-1);
-    animation: moveGradient1 15s ease infinite;
+    background: linear-gradient(45deg, var(--gradient-1), var(--gradient-2));
+    animation: moveGradient1 var(--animation-slow) ease infinite,
+               pulse var(--animation-medium) ease-in-out infinite;
 }
 
 .gradient-2 {
-    background: var(--gradient-2);
-    animation: moveGradient2 15s ease infinite;
+    background: linear-gradient(45deg, var(--gradient-3), var(--gradient-4));
+    animation: moveGradient2 var(--animation-slow) ease infinite,
+               pulse var(--animation-medium) ease-in-out infinite;
 }
 
 .gradient-3 {
-    background: var(--gradient-3);
-    animation: moveGradient3 15s ease infinite;
+    background: linear-gradient(45deg, var(--gradient-2), var(--gradient-3));
+    animation: moveGradient3 var(--animation-slow) ease infinite,
+               pulse var(--animation-medium) ease-in-out infinite;
 }
 
 @keyframes moveGradient1 {
@@ -174,7 +186,19 @@ body {
     backdrop-filter: blur(10px);
     padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-5px) rotateX(5deg);
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
 
 /* Login Toggle */
@@ -254,17 +278,21 @@ body {
 .form-group input {
     width: 100%;
     padding: 12px 15px 12px 45px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
     border-radius: 10px;
     font-size: 1rem;
     background: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+    border-color: var(--gradient-1);
+    box-shadow: 
+        0 0 0 3px rgba(99, 102, 241, 0.2),
+        inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
 }
 
 /* Button Styles */
@@ -283,6 +311,28 @@ body {
     justify-content: center;
     gap: 10px;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn-gradient:hover::before {
+    left: 100%;
 }
 
 .btn-gradient:hover {
@@ -378,4 +428,36 @@ body {
 
 .login-card {
     animation: fadeIn 0.5s ease-out;
+}
+
+/* Add new keyframes for particle effects */
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-15px) rotate(5deg); }
+    75% { transform: translateY(15px) rotate(-5deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* Add floating particles */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    animation: float var(--animation-medium) ease-in-out infinite;
 } 
