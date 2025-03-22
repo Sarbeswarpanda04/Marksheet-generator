@@ -4,6 +4,8 @@ const languageSelector = document.querySelector('.language-selector select');
 const performanceTypeSelect = document.querySelector('.chart-controls select');
 const performanceChart = document.querySelector('#performanceChart');
 const logoutBtn = document.querySelector('.logout-btn');
+const sidebar = document.querySelector('.sidebar');
+const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
 
 // Constants
 const DARK_MODE_KEY = 'dashboard_dark_mode';
@@ -84,6 +86,7 @@ function initialize() {
     setupChart();
     loadUserData();
     setupEventListeners();
+    setupMobileNavigation();
 }
 
 // Theme Management
@@ -240,6 +243,77 @@ function updateDashboard(userData) {
     `).join('');
 }
 
+// Mobile Navigation
+function setupMobileNavigation() {
+    // Toggle sidebar
+    mobileNavToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('show');
+        mobileNavToggle.innerHTML = sidebar.classList.contains('show') 
+            ? '<i class="fas fa-times"></i>' 
+            : '<i class="fas fa-bars"></i>';
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('show') &&
+            !sidebar.contains(e.target) &&
+            !mobileNavToggle.contains(e.target)) {
+            sidebar.classList.remove('show');
+            mobileNavToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        }
+    });
+
+    // Setup touch gestures
+    if (typeof Hammer !== 'undefined') {
+        const hammer = new Hammer(document.body);
+        
+        // Swipe right to open sidebar
+        hammer.on('swiperight', (e) => {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('show');
+                mobileNavToggle.innerHTML = '<i class="fas fa-times"></i>';
+            }
+        });
+
+        // Swipe left to close sidebar
+        hammer.on('swipeleft', (e) => {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('show');
+                mobileNavToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+    }
+
+    // Handle orientation change
+    window.addEventListener('orientationchange', () => {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('show');
+            mobileNavToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        }
+    });
+}
+
+// Update chart responsiveness
+function updateChartResponsiveness() {
+    if (window.innerWidth <= 480) {
+        // Adjust chart options for mobile
+        if (window.performanceChart) {
+            window.performanceChart.options.plugins.legend.display = false;
+            window.performanceChart.options.scales.x.ticks.maxRotation = 45;
+            window.performanceChart.options.scales.x.ticks.minRotation = 45;
+            window.performanceChart.update();
+        }
+    } else {
+        // Reset chart options for desktop
+        if (window.performanceChart) {
+            window.performanceChart.options.plugins.legend.display = true;
+            window.performanceChart.options.scales.x.ticks.maxRotation = 0;
+            window.performanceChart.options.scales.x.ticks.minRotation = 0;
+            window.performanceChart.update();
+        }
+    }
+}
+
 // Event Listeners
 function setupEventListeners() {
     themeToggle.addEventListener('click', toggleTheme);
@@ -256,18 +330,21 @@ function setupEventListeners() {
 
     logoutBtn.addEventListener('click', handleLogout);
 
-    // Add touch gestures for mobile
-    let touchStartX = 0;
-    let touchEndX = 0;
+    // Add resize listener for chart responsiveness
+    window.addEventListener('resize', debounce(() => {
+        updateChartResponsiveness();
+    }, 250));
 
-    document.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-
-    document.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipeGesture();
-    });
+    // Double tap to close sidebar on mobile
+    if (typeof Hammer !== 'undefined') {
+        const hammer = new Hammer(document.body);
+        hammer.on('doubletap', (e) => {
+            if (window.innerWidth <= 768 && sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                mobileNavToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+    }
 }
 
 // Utility Functions
@@ -325,21 +402,6 @@ function handleLogout() {
     setTimeout(() => {
         window.location.href = '../../index.html';
     }, 1000);
-}
-
-function handleSwipeGesture() {
-    const SWIPE_THRESHOLD = 100;
-    const difference = touchStartX - touchEndX;
-
-    if (Math.abs(difference) < SWIPE_THRESHOLD) return;
-
-    if (difference > 0) {
-        // Swipe left - show sidebar
-        document.querySelector('.sidebar').classList.add('show');
-    } else {
-        // Swipe right - hide sidebar
-        document.querySelector('.sidebar').classList.remove('show');
-    }
 }
 
 function updatePerformanceChart(type) {

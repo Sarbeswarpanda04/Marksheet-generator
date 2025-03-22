@@ -2,22 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - Marksheet Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Dashboard</title>
     <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/mobile.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/chart.js" rel="stylesheet">
 </head>
 <body class="dashboard-page">
+    <!-- Mobile Navigation Toggle -->
+    <button class="mobile-nav-toggle show-on-mobile">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="logo-wrapper">
+        <div class="sidebar-header">
             <img src="../../assets/logo.png" alt="Logo" class="logo">
-            <span class="logo-text">Student Portal</span>
+            <h2>Student Portal</h2>
         </div>
         <nav class="sidebar-nav">
-            <a href="student-dashboard.html" class="nav-item active">
+            <a href="dashboard.html" class="nav-item active">
                 <i class="fas fa-home"></i>
                 <span>Overview</span>
             </a>
@@ -41,170 +47,136 @@
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
             </a>
-            <button class="nav-item logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-            </button>
         </nav>
+        <button class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
     </aside>
 
     <!-- Main Content -->
     <main class="main-content">
         <!-- Top Bar -->
         <div class="top-bar">
-            <div class="breadcrumb">
-                <a href="#" class="breadcrumb-item">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-                <span class="notification-badge">2</span>
+            <div class="breadcrumb hide-on-mobile">
+                <span>Dashboard</span> / <span>Overview</span>
             </div>
             <div class="user-info">
-                <div class="language-selector">
-                    <select id="language">
-                        <option value="en">English</option>
-                        <option value="hi">हिंदी</option>
-                        <option value="bn">বাংলা</option>
-                    </select>
-                </div>
-                <div class="theme-toggle">
-                    <i class="fas fa-moon"></i>
-                </div>
-                <div class="user-profile">
-                    <img src="../../assets/avatar.png" alt="John Doe" class="avatar">
+                <div class="user-details">
                     <span class="user-name">John Doe</span>
+                    <span class="user-role">Student</span>
+                </div>
+                <img src="../../assets/avatar.png" alt="User Avatar" class="user-avatar">
+            </div>
+            <div class="actions">
+                <button class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <select class="language-selector">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="bn">Bengali</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>CGPA</h3>
+                    <span class="stat-value">9.2</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Attendance</h3>
+                    <span class="stat-value">92%</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Subjects</h3>
+                    <span class="stat-value">6</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Rank</h3>
+                    <span class="stat-value">5</span>
                 </div>
             </div>
         </div>
 
-        <!-- Dashboard Content -->
-        <div class="dashboard-content">
-            <!-- Quick Stats -->
-            <div class="quick-stats">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Current CGPA</h3>
-                        <p class="stat-value">8.75</p>
-                    </div>
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Recent Marksheets -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Recent Marksheets</h2>
+                    <a href="marksheets.html" class="view-all">View All</a>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Attendance</h3>
-                        <p class="stat-value">85%</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Subjects</h3>
-                        <p class="stat-value">6</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Rank</h3>
-                        <p class="stat-value">15</p>
-                    </div>
+                <div class="marksheets-list">
+                    <!-- Marksheets will be loaded dynamically -->
                 </div>
             </div>
 
-            <!-- Main Sections -->
-            <div class="dashboard-grid">
-                <!-- Recent Marksheets -->
-                <section class="dashboard-section recent-marksheets">
-                    <div class="section-header">
-                        <h2>Recent Marksheets</h2>
-                        <a href="marksheets.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                    <div class="marksheet-list">
-                        <div class="marksheet-item">
-                            <div class="marksheet-icon">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <div class="marksheet-info">
-                                <h3>Semester 6</h3>
-                                <p>Final Examination</p>
-                                <span class="date">March 2024</span>
-                            </div>
-                            <button class="download-btn">
-                                <i class="fas fa-download"></i>
-                            </button>
-                        </div>
-                        <div class="marksheet-item">
-                            <div class="marksheet-icon">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <div class="marksheet-info">
-                                <h3>Semester 5</h3>
-                                <p>Final Examination</p>
-                                <span class="date">November 2023</span>
-                            </div>
-                            <button class="download-btn">
-                                <i class="fas fa-download"></i>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Academic Performance -->
-                <section class="dashboard-section performance-chart">
-                    <div class="section-header">
-                        <h2>Academic Performance</h2>
-                        <div class="chart-controls">
-                            <select id="performanceType">
-                                <option value="semester">Semester-wise</option>
-                                <option value="subject">Subject-wise</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="performanceChart"></canvas>
-                    </div>
-                </section>
+            <!-- Performance Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Academic Performance</h2>
+                    <select class="chart-control">
+                        <option value="semester">Semester</option>
+                        <option value="subject">Subject</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
             </div>
 
             <!-- Upcoming Events -->
-            <section class="dashboard-section upcoming-events">
-                <div class="section-header">
+            <div class="card">
+                <div class="card-header">
                     <h2>Upcoming Events</h2>
                 </div>
                 <div class="events-list">
-                    <div class="event-item">
-                        <div class="event-date">
-                            <span class="date">25</span>
-                            <span class="month">MAR</span>
-                        </div>
-                        <div class="event-info">
-                            <h3>Mid-Semester Examination</h3>
-                            <p><i class="fas fa-clock"></i> 10:00 AM</p>
-                            <p><i class="fas fa-map-marker-alt"></i> Examination Hall</p>
-                        </div>
-                    </div>
-                    <div class="event-item">
-                        <div class="event-date">
-                            <span class="date">28</span>
-                            <span class="month">MAR</span>
-                        </div>
-                        <div class="event-info">
-                            <h3>Project Submission</h3>
-                            <p><i class="fas fa-clock"></i> 2:00 PM</p>
-                            <p><i class="fas fa-map-marker-alt"></i> Department Office</p>
-                        </div>
-                    </div>
+                    <!-- Events will be loaded dynamically -->
                 </div>
-            </section>
+            </div>
         </div>
+
+        <!-- Bottom Navigation for Mobile -->
+        <nav class="bottom-nav show-on-mobile">
+            <a href="dashboard.html" class="bottom-nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="marksheets.html" class="bottom-nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Marksheets</span>
+            </a>
+            <a href="performance.html" class="bottom-nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Performance</span>
+            </a>
+            <a href="profile.html" class="bottom-nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
     </main>
 
     <!-- Toast Container -->
@@ -212,6 +184,8 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../../js/dashboard.js"></script>
+    <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+    <script src="../../js/mobile-utils.js" type="module"></script>
+    <script src="../../js/dashboard.js" type="module"></script>
 </body>
 </html> 

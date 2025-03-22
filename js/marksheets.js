@@ -1,3 +1,5 @@
+import { PullToRefresh, TouchGestureHandler, MobileNavigation, mobileAnimations } from './mobile-utils.js';
+
 // DOM Elements
 const searchInput = document.getElementById('searchMarksheet');
 const semesterFilter = document.getElementById('semesterFilter');
@@ -11,6 +13,10 @@ const totalPagesSpan = document.querySelector('.total-pages');
 const modal = document.getElementById('previewModal');
 const closeModalBtns = document.querySelectorAll('.close-modal');
 const downloadBtn = document.getElementById('downloadMarksheet');
+const marksheetsList = document.querySelector('.marksheets-list');
+const filterControls = document.querySelector('.filter-controls');
+const sidebar = document.querySelector('.sidebar');
+const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
 
 // State
 let currentPage = 1;
@@ -24,8 +30,136 @@ const MARKSHEETS_KEY = 'student_marksheets';
 
 // Initialize
 function initialize() {
+    setupMobileFeatures();
     loadMarksheets();
     setupEventListeners();
+}
+
+// Mobile Features Setup
+function setupMobileFeatures() {
+    // Initialize mobile navigation
+    new MobileNavigation({
+        sidebar,
+        toggle: mobileNavToggle
+    });
+
+    // Initialize pull to refresh
+    new PullToRefresh({
+        container: marksheetsList,
+        onRefresh: () => {
+            return new Promise((resolve) => {
+                loadMarksheets().then(resolve);
+            });
+        }
+    });
+
+    // Setup touch gestures for marksheet cards
+    setupMarksheetCardGestures();
+
+    // Animate elements on page load
+    animatePageElements();
+}
+
+// Touch Gestures for Marksheet Cards
+function setupMarksheetCardGestures() {
+    document.querySelectorAll('.marksheet-card').forEach(card => {
+        new TouchGestureHandler({
+            element: card,
+            onSwipeLeft: () => {
+                card.classList.add('swiping', 'swiping-left');
+                setTimeout(() => showDeleteConfirmation(card), 300);
+            },
+            onSwipeRight: () => {
+                card.classList.add('swiping', 'swiping-right');
+                setTimeout(() => downloadMarksheet(card.dataset.id), 300);
+            },
+            onLongPress: () => {
+                showMarksheetOptions(card);
+            },
+            onDoubleTap: () => {
+                previewMarksheet(card.dataset.id);
+            }
+        });
+
+        // Add touch feedback
+        card.classList.add('touch-feedback');
+        card.addEventListener('touchstart', () => {
+            card.classList.add('active');
+        });
+        card.addEventListener('touchend', () => {
+            card.classList.remove('active');
+        });
+    });
+}
+
+// Animate Page Elements
+function animatePageElements() {
+    // Animate filter controls
+    mobileAnimations.slideIn(filterControls, 'top', 0.2);
+
+    // Animate marksheet cards
+    document.querySelectorAll('.marksheet-card').forEach((card, index) => {
+        mobileAnimations.fadeIn(card, 0.1 * index);
+    });
+}
+
+// Mobile Modal for Marksheet Options
+function showMarksheetOptions(card) {
+    const modal = document.createElement('div');
+    modal.className = 'mobile-modal';
+    modal.innerHTML = `
+        <div class="modal-drag-handle"></div>
+        <div class="modal-content">
+            <h3>Marksheet Options</h3>
+            <div class="modal-options">
+                <button onclick="previewMarksheet('${card.dataset.id}')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button onclick="downloadMarksheet('${card.dataset.id}')">
+                    <i class="fas fa-download"></i> Download
+                </button>
+                <button onclick="shareMarksheet('${card.dataset.id}')">
+                    <i class="fas fa-share"></i> Share
+                </button>
+                <button onclick="deleteMarksheet('${card.dataset.id}')" class="danger">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => modal.classList.add('show'));
+
+    // Setup drag to dismiss
+    let startY = 0;
+    modal.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+    });
+
+    modal.addEventListener('touchmove', (e) => {
+        const deltaY = e.touches[0].clientY - startY;
+        if (deltaY > 0) {
+            modal.style.transform = `translateY(${deltaY}px)`;
+        }
+    });
+
+    modal.addEventListener('touchend', (e) => {
+        const deltaY = e.changedTouches[0].clientY - startY;
+        if (deltaY > 100) {
+            closeModal(modal);
+        } else {
+            modal.style.transform = '';
+        }
+    });
+}
+
+// Close Modal with Animation
+function closeModal(modal) {
+    modal.classList.remove('show');
+    modal.addEventListener('transitionend', () => {
+        modal.remove();
+    });
 }
 
 // Load Marksheets
@@ -285,6 +419,9 @@ function setupEventListeners() {
             modal.classList.remove('active');
         }
     });
+
+    // Add smooth scrolling
+    marksheetsList.classList.add('smooth-scroll');
 }
 
 // Utility Functions

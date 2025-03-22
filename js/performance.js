@@ -1,14 +1,18 @@
+import { PullToRefresh, TouchGestureHandler, MobileNavigation, mobileAnimations } from './mobile-utils.js';
+
 // DOM Elements
-const cgpaPeriodSelect = document.getElementById('cgpaPeriod');
-const subjectSemesterSelect = document.getElementById('subjectSemester');
-const gradeFilterSelect = document.getElementById('gradeFilter');
-const attendancePeriodSelect = document.getElementById('attendancePeriod');
+const performanceContainer = document.querySelector('.performance-container');
+const chartContainer = document.querySelector('.chart-container');
+const sidebar = document.querySelector('.sidebar');
+const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+const periodFilter = document.querySelector('#periodFilter');
+const subjectFilter = document.querySelector('#subjectFilter');
 
 // Chart Instances
 let cgpaChart = null;
 let subjectChart = null;
-let gradeChart = null;
 let attendanceChart = null;
+let gradeChart = null;
 
 // Chart Colors
 const chartColors = {
@@ -27,239 +31,139 @@ const chartColors = {
 
 // Initialize
 function initialize() {
+    setupMobileFeatures();
     setupCharts();
-    setupEventListeners();
     loadPerformanceData();
+    setupEventListeners();
 }
 
-// Setup Charts
+// Mobile Features Setup
+function setupMobileFeatures() {
+    // Initialize mobile navigation
+    new MobileNavigation({
+        sidebar,
+        toggle: mobileNavToggle
+    });
+
+    // Initialize pull to refresh
+    new PullToRefresh({
+        container: performanceContainer,
+        onRefresh: () => {
+            return new Promise((resolve) => {
+                loadPerformanceData().then(resolve);
+            });
+        }
+    });
+
+    // Setup touch gestures for charts
+    setupChartGestures();
+
+    // Animate elements on page load
+    animatePageElements();
+}
+
+// Touch Gestures for Charts
+function setupChartGestures() {
+    const chartContainers = document.querySelectorAll('.chart-wrapper');
+    
+    chartContainers.forEach(container => {
+        new TouchGestureHandler({
+            element: container,
+            onPinch: (e) => {
+                const scale = Math.min(Math.max(e.scale, 0.5), 2);
+                container.style.transform = `scale(${scale})`;
+            },
+            onDoubleTap: () => {
+                container.style.transform = 'scale(1)';
+            }
+        });
+
+        // Add touch feedback
+        container.classList.add('touch-feedback');
+    });
+}
+
+// Animate Page Elements
+function animatePageElements() {
+    // Animate stats cards
+    document.querySelectorAll('.stat-card').forEach((card, index) => {
+        mobileAnimations.fadeIn(card, 0.1 * index);
+    });
+
+    // Animate charts
+    document.querySelectorAll('.chart-wrapper').forEach((chart, index) => {
+        mobileAnimations.scaleIn(chart, 0.2 + (0.1 * index));
+    });
+}
+
+// Setup Charts with Mobile Optimizations
 function setupCharts() {
-    // CGPA Chart
-    const cgpaCtx = document.getElementById('cgpaChart').getContext('2d');
-    cgpaChart = new Chart(cgpaCtx, {
+    setupCGPAChart();
+    setupSubjectChart();
+    setupAttendanceChart();
+    setupGradeChart();
+    updateChartsResponsiveness();
+}
+
+function setupCGPAChart() {
+    const ctx = document.getElementById('cgpaChart').getContext('2d');
+    cgpaChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6'],
             datasets: [{
                 label: 'CGPA',
                 data: [8.5, 8.7, 9.0, 8.8, 9.2, 9.4],
-                borderColor: chartColors.primary,
+                borderColor: '#6366f1',
                 backgroundColor: (context) => {
                     const ctx = context.chart.ctx;
-                    return chartColors.gradient(ctx, chartColors.primary);
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+                    gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+                    return gradient;
                 },
                 tension: 0.4,
                 fill: true
             }]
         },
-        options: getLineChartOptions('CGPA Progression')
-    });
-
-    // Subject Performance Chart
-    const subjectCtx = document.getElementById('subjectChart').getContext('2d');
-    subjectChart = new Chart(subjectCtx, {
-        type: 'radar',
-        data: {
-            labels: ['Mathematics', 'Physics', 'Chemistry', 'English', 'Computer Science', 'Biology'],
-            datasets: [{
-                label: 'Current Performance',
-                data: [92, 88, 95, 85, 98, 90],
-                borderColor: chartColors.primary,
-                backgroundColor: `${chartColors.primary}40`,
-                pointBackgroundColor: chartColors.primary,
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: chartColors.primary
-            }]
-        },
-        options: getRadarChartOptions('Subject-wise Performance')
-    });
-
-    // Grade Distribution Chart
-    const gradeCtx = document.getElementById('gradeChart').getContext('2d');
-    gradeChart = new Chart(gradeCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['A+', 'A', 'B+', 'B', 'C'],
-            datasets: [{
-                data: [12, 8, 4, 2, 1],
-                backgroundColor: [
-                    chartColors.success,
-                    chartColors.primary,
-                    chartColors.secondary,
-                    chartColors.warning,
-                    chartColors.error
-                ]
-            }]
-        },
-        options: getDoughnutChartOptions('Grade Distribution')
-    });
-
-    // Attendance vs Performance Chart
-    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
-    attendanceChart = new Chart(attendanceCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Mathematics', 'Physics', 'Chemistry', 'English', 'Computer Science', 'Biology'],
-            datasets: [
-                {
-                    label: 'Attendance (%)',
-                    data: [95, 88, 92, 85, 98, 90],
-                    backgroundColor: `${chartColors.primary}80`,
-                    borderColor: chartColors.primary,
-                    borderWidth: 1
-                },
-                {
-                    label: 'Performance (%)',
-                    data: [92, 88, 95, 85, 98, 90],
-                    backgroundColor: `${chartColors.secondary}80`,
-                    borderColor: chartColors.secondary,
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: getBarChartOptions('Attendance vs Performance')
+        options: getMobileChartOptions('CGPA Progression')
     });
 }
 
-// Chart Options
-function getLineChartOptions(title) {
+function getMobileChartOptions(title) {
+    const isMobile = window.innerWidth <= 768;
     return {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                display: false
+                display: !isMobile
             },
             title: {
                 display: true,
                 text: title,
                 color: 'white',
                 font: {
-                    size: 16
+                    size: isMobile ? 14 : 16
                 }
+            },
+            tooltip: {
+                enabled: true,
+                mode: isMobile ? 'nearest' : 'index',
+                intersect: isMobile
             }
         },
         scales: {
             y: {
                 beginAtZero: false,
-                min: 6,
-                max: 10,
                 grid: {
                     color: 'rgba(255, 255, 255, 0.1)'
                 },
-                ticks: {
-                    color: 'rgba(255, 255, 255, 0.8)'
-                }
-            },
-            x: {
-                grid: {
-                    display: false
-                },
-                ticks: {
-                    color: 'rgba(255, 255, 255, 0.8)'
-                }
-            }
-        }
-    };
-}
-
-function getRadarChartOptions(title) {
-    return {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            },
-            title: {
-                display: true,
-                text: title,
-                color: 'white',
-                font: {
-                    size: 16
-                }
-            }
-        },
-        scales: {
-            r: {
-                min: 0,
-                max: 100,
                 ticks: {
                     color: 'rgba(255, 255, 255, 0.8)',
-                    backdropColor: 'transparent'
-                },
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)'
-                },
-                angleLines: {
-                    color: 'rgba(255, 255, 255, 0.1)'
-                },
-                pointLabels: {
-                    color: 'white'
-                }
-            }
-        }
-    };
-}
-
-function getDoughnutChartOptions(title) {
-    return {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'right',
-                labels: {
-                    color: 'white',
-                    usePointStyle: true,
-                    padding: 20
-                }
-            },
-            title: {
-                display: true,
-                text: title,
-                color: 'white',
-                font: {
-                    size: 16
-                }
-            }
-        },
-        cutout: '70%'
-    };
-}
-
-function getBarChartOptions(title) {
-    return {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: {
-                    color: 'white',
-                    usePointStyle: true,
-                    padding: 20
-                }
-            },
-            title: {
-                display: true,
-                text: title,
-                color: 'white',
-                font: {
-                    size: 16
-                }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                max: 100,
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)'
-                },
-                ticks: {
-                    color: 'rgba(255, 255, 255, 0.8)'
+                    font: {
+                        size: isMobile ? 10 : 12
+                    }
                 }
             },
             x: {
@@ -267,91 +171,86 @@ function getBarChartOptions(title) {
                     display: false
                 },
                 ticks: {
-                    color: 'rgba(255, 255, 255, 0.8)'
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    font: {
+                        size: isMobile ? 10 : 12
+                    },
+                    maxRotation: isMobile ? 45 : 0,
+                    minRotation: isMobile ? 45 : 0
                 }
             }
+        },
+        interaction: {
+            mode: isMobile ? 'nearest' : 'index',
+            intersect: false
         }
     };
 }
 
-// Load Performance Data
-function loadPerformanceData() {
+// Update Charts Responsiveness
+function updateChartsResponsiveness() {
+    const isMobile = window.innerWidth <= 768;
+    const charts = [cgpaChart, subjectChart, attendanceChart, gradeChart];
+
+    charts.forEach(chart => {
+        if (!chart) return;
+
+        // Update chart options for mobile
+        chart.options.plugins.legend.display = !isMobile;
+        chart.options.plugins.title.font.size = isMobile ? 14 : 16;
+        chart.options.scales.x.ticks.font.size = isMobile ? 10 : 12;
+        chart.options.scales.y.ticks.font.size = isMobile ? 10 : 12;
+        chart.options.scales.x.ticks.maxRotation = isMobile ? 45 : 0;
+        chart.options.interaction.mode = isMobile ? 'nearest' : 'index';
+        chart.update();
+    });
+}
+
+// Load Performance Data with Loading State
+async function loadPerformanceData() {
     showLoading();
-
-    // Simulated API call
-    setTimeout(() => {
-        // Data will be loaded from API
+    
+    try {
+        const response = await fetch('/api/performance');
+        const data = await response.json();
+        updateCharts(data);
+        updateStats(data);
+    } catch (error) {
+        showError('Failed to load performance data');
+    } finally {
         hideLoading();
-    }, 1000);
-}
-
-// Update Charts
-function updateCGPAChart(period) {
-    const data = period === 'year' ? {
-        labels: ['2022', '2023', '2024'],
-        data: [8.6, 9.0, 9.3]
-    } : {
-        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6'],
-        data: [8.5, 8.7, 9.0, 8.8, 9.2, 9.4]
-    };
-
-    cgpaChart.data.labels = data.labels;
-    cgpaChart.data.datasets[0].data = data.data;
-    cgpaChart.update();
-}
-
-function updateSubjectChart(semester) {
-    const data = semester === 'all' ? {
-        data: [90, 89, 92, 87, 95, 88]
-    } : {
-        data: [92, 88, 95, 85, 98, 90]
-    };
-
-    subjectChart.data.datasets[0].data = data.data;
-    subjectChart.update();
-}
-
-function updateGradeChart(filter) {
-    const data = filter === 'overall' ? {
-        data: [30, 25, 15, 8, 2]
-    } : {
-        data: [12, 8, 4, 2, 1]
-    };
-
-    gradeChart.data.datasets[0].data = data.data;
-    gradeChart.update();
-}
-
-function updateAttendanceChart(period) {
-    if (period === 'semester') {
-        attendanceChart.data.labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6'];
-        attendanceChart.data.datasets[0].data = [90, 92, 88, 95, 93, 94];
-        attendanceChart.data.datasets[1].data = [85, 88, 90, 92, 95, 94];
-    } else {
-        attendanceChart.data.labels = ['Mathematics', 'Physics', 'Chemistry', 'English', 'Computer Science', 'Biology'];
-        attendanceChart.data.datasets[0].data = [95, 88, 92, 85, 98, 90];
-        attendanceChart.data.datasets[1].data = [92, 88, 95, 85, 98, 90];
     }
-    attendanceChart.update();
+}
+
+// Mobile-friendly Loading Indicator
+function showLoading() {
+    const loader = document.createElement('div');
+    loader.className = 'loading-spinner';
+    document.body.appendChild(loader);
+}
+
+function hideLoading() {
+    const loader = document.querySelector('.loading-spinner');
+    if (loader) {
+        loader.remove();
+    }
 }
 
 // Event Listeners
 function setupEventListeners() {
-    cgpaPeriodSelect.addEventListener('change', (e) => {
-        updateCGPAChart(e.target.value);
+    // Filter change handlers
+    periodFilter.addEventListener('change', updatePeriod);
+    subjectFilter.addEventListener('change', updateSubject);
+
+    // Handle orientation change
+    window.addEventListener('orientationchange', () => {
+        setTimeout(updateChartsResponsiveness, 100);
     });
 
-    subjectSemesterSelect.addEventListener('change', (e) => {
-        updateSubjectChart(e.target.value);
-    });
-
-    gradeFilterSelect.addEventListener('change', (e) => {
-        updateGradeChart(e.target.value);
-    });
-
-    attendancePeriodSelect.addEventListener('change', (e) => {
-        updateAttendanceChart(e.target.value);
-    });
+    // Handle resize
+    window.addEventListener('resize', debounce(() => {
+        updateChartsResponsiveness();
+    }, 250));
 }
 
 // Initialize when DOM is loaded
